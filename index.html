@@ -1,125 +1,248 @@
-<!-- EVERYTHING ABOVE THIS POINT IS IDENTICAL TO YOUR ORIGINAL -->
-<!-- (HEAD + STYLE + HEADER + DRAWER = UNCHANGED) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora Command OS</title>
 
-<main id="main">
-  <section class="section" aria-labelledby="consoleTitle">
-    <div class="section-heading">
-      <h2 id="consoleTitle">Aurora Logistical Control Nest</h2>
-      <p>Direct command interface. Issue instructions and monitor system responses in real time.</p>
-    </div>
-
-    <div class="hero-panel" style="min-height:500px; display:flex; flex-direction:column;">
-
-      <div id="consoleOutput" style="
-        flex:1;
-        font-family:monospace;
-        color:var(--green);
-        overflow-y:auto;
-        padding:1rem;
-        border:1px solid var(--line);
-        border-radius:var(--radius-lg);
-        background:rgba(0,0,0,0.35);
-      ">
-        > Aurora Control Nest Initialised...<br>
-      </div>
-
-      <div style="display:flex; gap:.5rem; margin-top:1rem;">
-        <input id="consoleInput" type="text" placeholder="Enter command..."
-          style="
-            flex:1;
-            padding:.85rem;
-            border-radius:12px;
-            border:1px solid var(--line);
-            background:#000;
-            color:var(--green);
-          ">
-      </div>
-
-    </div>
-  </section>
-</main>
-
-<!-- FOOTER: EXACT COPY — NO CHANGES -->
-<footer class="footer" aria-labelledby="socialTitle">
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <h2 id="socialTitle">Follow the signal.</h2>
-        <p>Social channels sit here so visitors can follow updates, builds, streams, and posts without spelunking through a private repo like digital archaeologists in cheap boots.</p>
-      </div>
-
-      <div class="social-grid" aria-label="Social media links">
-        <a class="social-link" href="https://github.com/AOL83" target="_blank" rel="noopener noreferrer"><span>GitHub</span><span>↗</span></a>
-        <a class="social-link" href="#"><span>YouTube</span><span>↗</span></a>
-        <a class="social-link" href="#"><span>Instagram</span><span>↗</span></a>
-        <a class="social-link" href="#"><span>TikTok</span><span>↗</span></a>
-        <a class="social-link" href="#"><span>Substack</span><span>↗</span></a>
-        <a class="social-link" href="#"><span>Facebook</span><span>↗</span></a>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      <span>© <span id="year"></span> Aurora Command / Terence Lewis</span>
-      <span>Static multi-page architecture. Neon included. Chaos mildly supervised.</span>
-    </div>
-  </div>
-</footer>
-
-<script>
-const menuToggle = document.getElementById('menuToggle');
-const drawer = document.getElementById('siteDrawer');
-const overlay = document.getElementById('drawerOverlay');
-const navSearch = document.getElementById('navSearch');
-const navLinks = Array.from(drawer.querySelectorAll('.nav-list li'));
-const year = document.getElementById('year');
-
-year.textContent = new Date().getFullYear();
-
-function setMenu(open) {
-  document.body.classList.toggle('nav-open', open);
-  drawer.classList.toggle('active', open);
-  overlay.classList.toggle('active', open);
-  overlay.hidden = !open;
-  drawer.setAttribute('aria-hidden', String(!open));
-  menuToggle.setAttribute('aria-expanded', String(open));
+<style>
+:root{
+  --bg:#050612;
+  --panel:rgba(9,18,38,.7);
+  --line:rgba(140,245,255,.18);
+  --cyan:#58f6ff;
+  --pink:#ff4fd8;
+  --amber:#ffd166;
+  --text:#edf7ff;
+  --radius:20px;
 }
 
-menuToggle.addEventListener('click', () => {
-  setMenu(menuToggle.getAttribute('aria-expanded') !== 'true');
-});
+/* ===== GLOBAL ===== */
+body{
+  margin:0;
+  font-family:Inter,system-ui;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(88,246,255,.2), transparent 40rem),
+    radial-gradient(circle at 80% 0%, rgba(255,79,216,.2), transparent 40rem),
+    linear-gradient(135deg,#03040d,#08111f,#050612);
+}
 
-overlay.addEventListener('click', () => setMenu(false));
+/* GRID + NOISE */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(88,246,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(88,246,255,.06) 1px, transparent 1px);
+  background-size:60px 60px;
+  opacity:.25;
+  pointer-events:none;
+}
 
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') setMenu(false);
-});
+/* ===== HEADER ===== */
+.header{
+  position:sticky;
+  top:0;
+  display:flex;
+  justify-content:space-between;
+  padding:1rem 1.5rem;
+  backdrop-filter:blur(20px);
+  background:rgba(5,10,25,.7);
+  border-bottom:1px solid var(--line);
+}
 
-navSearch.addEventListener('input', () => {
-  const query = navSearch.value.toLowerCase();
-  navLinks.forEach((item) => {
-    item.hidden = !item.textContent.toLowerCase().includes(query);
-  });
-});
+.nav a{
+  margin-right:1rem;
+  padding:.5rem .9rem;
+  border-radius:999px;
+  border:1px solid transparent;
+  transition:.2s;
+  cursor:pointer;
+}
 
-/* CONSOLE LOGIC */
-const input = document.getElementById("consoleInput");
-const output = document.getElementById("consoleOutput");
+.nav a:hover{
+  border-color:var(--cyan);
+  background:rgba(88,246,255,.1);
+  box-shadow:0 0 20px rgba(88,246,255,.2);
+}
 
-input.addEventListener("keydown", function(e){
-  if(e.key === "Enter"){
-    const cmd = input.value.trim();
-    output.innerHTML += "> " + cmd + "<br>";
+/* ===== HERO ===== */
+.hero{
+  max-width:1100px;
+  margin:auto;
+  padding:4rem 1.5rem;
+}
 
-    if(cmd === "clear"){
-      output.innerHTML = "";
-    } else {
-      output.innerHTML += "Executed: " + cmd + "<br>";
+h1{
+  font-size:clamp(3rem,8vw,6rem);
+  line-height:.9;
+  margin:0;
+  background:linear-gradient(90deg,#fff,var(--cyan),var(--pink),var(--amber));
+  -webkit-background-clip:text;
+  color:transparent;
+  filter:drop-shadow(0 0 20px rgba(88,246,255,.2));
+}
+
+.hero p{
+  color:#a9b7d9;
+  max-width:600px;
+  margin-top:1rem;
+}
+
+/* ===== GRID ===== */
+.grid{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  gap:1rem;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  padding:1rem;
+}
+
+/* ===== CARD SYSTEM ===== */
+.card{
+  position:relative;
+  padding:1.2rem;
+  border-radius:var(--radius);
+  border:1px solid rgba(255,255,255,.08);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+    var(--panel);
+  cursor:pointer;
+  transition:.25s;
+  overflow:hidden;
+}
+
+.card:hover{
+  transform:translateY(-6px);
+  border-color:var(--cyan);
+  box-shadow:0 15px 40px rgba(0,0,0,.5),
+             0 0 30px rgba(88,246,255,.2);
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  background:linear-gradient(120deg,var(--cyan),transparent,var(--pink));
+  opacity:.2;
+}
+
+/* ===== CONSOLE ===== */
+.console{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  max-height:300px;
+  display:flex;
+  flex-direction:column;
+  background:rgba(0,0,0,.9);
+  border-top:1px solid var(--cyan);
+  backdrop-filter:blur(10px);
+}
+
+.log{
+  flex:1;
+  overflow-y:auto;
+  font-family:monospace;
+  padding:.7rem;
+  color:#9effff;
+}
+
+.log div{
+  margin-bottom:.3rem;
+  opacity:.9;
+}
+
+input{
+  border:none;
+  border-top:1px solid var(--cyan);
+  background:#000;
+  color:var(--cyan);
+  padding:.6rem;
+  outline:none;
+}
+
+input:focus{
+  box-shadow:0 0 15px rgba(88,246,255,.3);
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div>⚡ Aurora Command</div>
+  <div class="nav">
+    <a onclick="Aurora.run('page home')">Home</a>
+    <a onclick="Aurora.run('page dev')">Dev</a>
+    <a onclick="Aurora.run('page unreal')">VM</a>
+    <a onclick="Aurora.run('run cart game')">Game</a>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>Aurora OS</h1>
+  <p>Command-driven interface with a unified visual system and modular execution layer.</p>
+</div>
+
+<div class="grid">
+  <div class="card" onclick="Aurora.run('page dev')">Dev Environment</div>
+  <div class="card" onclick="Aurora.run('page unreal')">VM System</div>
+  <div class="card" onclick="Aurora.run('load cart game')">Load Game</div>
+  <div class="card" onclick="Aurora.run('run cart game')">Run Game</div>
+</div>
+
+<div class="console">
+  <div id="log" class="log"></div>
+  <input id="cmd" placeholder="Type command..." />
+</div>
+
+<script>
+const logEl=document.getElementById("log");
+
+function log(msg){
+  const d=document.createElement("div");
+  d.textContent="> "+msg;
+  logEl.appendChild(d);
+  logEl.scrollTop=logEl.scrollHeight;
+}
+
+const Aurora={
+  state:{page:"home",cart:null},
+  commands:{
+    help(){return "help, page, load cart, run cart";},
+    page(arg){this.state.page=arg;log("Switched to "+arg);return "OK";},
+    "load cart"(arg){this.state.cart=arg;return "Loaded "+arg;},
+    "run cart"(){
+      if(!this.state.cart)return "No cart";
+      log("Running "+this.state.cart);
+      return "Executed";
     }
+  },
+  run(input){
+    const p=input.split(" ");
+    const cmd=p.slice(0,2).join(" ");
+    const arg=p.slice(2).join(" ");
+    if(this.commands[cmd])return log(this.commands[cmd].call(this,arg));
+    if(this.commands[p[0]])return log(this.commands[p[0]].call(this,arg));
+    log("Unknown command");
+  }
+};
 
-    input.value = "";
-    output.scrollTop = output.scrollHeight;
+document.getElementById("cmd").addEventListener("keypress",e=>{
+  if(e.key==="Enter"){
+    const v=e.target.value;
+    log(v);
+    Aurora.run(v);
+    e.target.value="";
   }
 });
+
+log("Aurora OS Ready");
 </script>
 
 </body>
