@@ -13,10 +13,7 @@
   --cyan:#58f6ff;
   --pink:#ff4fd8;
   --amber:#ffd166;
-  --yellow:#eaff38;
-  --green:#55ff9f;
   --text:#edf7ff;
-  --radius:20px;
 }
 
 /* ===== BASE ===== */
@@ -28,19 +25,6 @@ body{
     radial-gradient(circle at 20% 10%, rgba(88,246,255,.2), transparent 40rem),
     radial-gradient(circle at 80% 0%, rgba(255,79,216,.2), transparent 40rem),
     linear-gradient(135deg,#03040d,#08111f,#050612);
-}
-
-/* GRID OVERLAY */
-body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:
-    linear-gradient(rgba(88,246,255,.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(88,246,255,.06) 1px, transparent 1px);
-  background-size:60px 60px;
-  opacity:.25;
-  pointer-events:none;
 }
 
 /* ===== HEADER ===== */
@@ -59,8 +43,8 @@ body::before{
   margin-right:1rem;
   padding:.5rem .9rem;
   border-radius:999px;
-  transition:.2s;
   cursor:pointer;
+  transition:.2s;
 }
 
 .nav a:hover{
@@ -94,14 +78,13 @@ h1{
   padding:1rem;
 }
 
-/* ===== CARD ===== */
 .card{
   padding:1.2rem;
-  border-radius:var(--radius);
+  border-radius:20px;
   border:1px solid rgba(255,255,255,.08);
   background:var(--panel);
-  transition:.25s;
   cursor:pointer;
+  transition:.25s;
 }
 
 .card:hover{
@@ -110,16 +93,17 @@ h1{
   box-shadow:0 0 30px rgba(88,246,255,.2);
 }
 
-/* ===== FOOTER ===== */
+/* ===== TRUE FOOTER ===== */
 .footer{
   position:relative;
-  margin-top:3rem;
-  border-top:1px solid rgba(234,255,56,.3);
+  margin-top:4rem;
+  border-top:1px solid rgba(200,255,80,.3);
+  overflow:hidden;
+
   background:
-    radial-gradient(circle at 10% 10%, rgba(234,255,56,.2), transparent 20rem),
-    radial-gradient(circle at 90% 0%, rgba(85,255,159,.2), transparent 22rem),
-    linear-gradient(180deg, rgba(4,8,16,.5), rgba(2,7,5,.95));
-  box-shadow: inset 0 1px 0 rgba(234,255,56,.15);
+    radial-gradient(circle at 0% 50%, rgba(200,255,80,.25), transparent 40%),
+    radial-gradient(circle at 100% 0%, rgba(0,255,180,.15), transparent 40%),
+    linear-gradient(180deg, #020611, #04110c 60%, #020611);
 }
 
 .footer::before{
@@ -128,66 +112,112 @@ h1{
   inset:0;
   opacity:.25;
   background:
-    linear-gradient(120deg, transparent 40%, rgba(234,255,56,.15), transparent 60%),
-    repeating-linear-gradient(90deg, rgba(85,255,159,.08) 0 1px, transparent 1px 18px);
+    repeating-linear-gradient(
+      90deg,
+      rgba(120,255,120,.08) 0 1px,
+      transparent 1px 14px
+    );
 }
 
 .footer-inner{
-  width:min(100% - 1.5rem,1100px);
+  position:relative;
+  width:min(1100px, 100% - 1.5rem);
   margin:auto;
-  padding:2.5rem 0;
+  padding:3rem 0;
 }
 
 .footer-top{
   display:grid;
-  gap:1.5rem;
+  grid-template-columns:1fr 1fr;
+  gap:2rem;
+  align-items:center;
 }
 
 .footer-brand h2{
+  font-size:clamp(2.5rem,6vw,4rem);
   margin:0;
-  font-size:clamp(2rem,6vw,3rem);
-  background:linear-gradient(90deg,#fff,var(--yellow),var(--green));
+  font-weight:900;
+}
+
+.footer-brand h2 span{
+  background:linear-gradient(90deg,#dfff8c,#6bff9f);
   -webkit-background-clip:text;
   color:transparent;
 }
 
 .footer-brand p{
-  color:#a8b89a;
+  margin-top:1rem;
+  color:#b7c7a6;
+  max-width:520px;
 }
 
+/* SOCIAL GRID */
 .social-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:.8rem;
-  margin-top:1rem;
+  grid-template-columns:repeat(2,1fr);
+  gap:1rem;
 }
 
 .social-link{
+  position:relative;
   display:flex;
   justify-content:space-between;
-  padding:.8rem 1rem;
-  border-radius:18px;
-  border:1px solid rgba(223,255,87,.4);
+  align-items:center;
+  padding:1rem 1.2rem;
+  border-radius:20px;
+  border:1px solid rgba(200,255,80,.5);
+
   background:
-    linear-gradient(135deg, rgba(223,255,87,.15), rgba(85,255,159,.08), rgba(0,0,0,.4));
-  color:#eaffaa;
-  font-weight:800;
+    linear-gradient(135deg, rgba(200,255,80,.15), rgba(0,255,150,.08), rgba(0,0,0,.5)),
+    radial-gradient(circle at 10% 0%, rgba(255,255,120,.25), transparent 50%);
+
+  color:#eaff9c;
+  font-weight:900;
+
+  box-shadow:
+    0 12px 0 rgba(0,50,20,.7),
+    0 20px 40px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.25);
+
   transition:.25s;
 }
 
-.social-link:hover{
-  transform:translateY(-6px);
-  box-shadow:0 0 40px rgba(85,255,159,.2);
+.social-link::after{
+  content:"";
+  position:absolute;
+  left:14px;
+  right:14px;
+  bottom:8px;
+  height:3px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#ffd166,#eaff38,#55ff9f);
+  box-shadow:0 0 20px rgba(200,255,80,.8);
 }
 
+.social-link span:last-child{
+  display:grid;
+  place-items:center;
+  width:32px;
+  height:32px;
+  border-radius:10px;
+  border:1px solid rgba(200,255,80,.5);
+  background:rgba(0,0,0,.3);
+  color:#55ff9f;
+}
+
+.social-link:hover{
+  transform:translateY(-6px) scale(1.03);
+}
+
+/* BOTTOM BAR */
 .footer-bottom{
   display:flex;
   justify-content:space-between;
-  margin-top:2rem;
+  margin-top:2.5rem;
   padding-top:1rem;
-  border-top:1px solid rgba(234,255,56,.15);
-  font-size:.85rem;
+  border-top:1px solid rgba(200,255,80,.2);
   color:#9cae90;
+  font-size:.85rem;
 }
 
 /* ===== CONSOLE ===== */
@@ -243,27 +273,33 @@ input{
   <div class="card" onclick="Aurora.run('run cart game')">Run Game</div>
 </div>
 
-<!-- ===== FULL FOOTER INTEGRATED ===== -->
 <footer class="footer">
   <div class="footer-inner">
+
     <div class="footer-top">
       <div class="footer-brand">
-        <h2>System Signal</h2>
-        <p>External links, builds, and outputs from Aurora.</p>
+        <h2>Follow <span>the signal.</span></h2>
+        <p>
+          Social channels sit here so visitors can follow updates, builds, streams,
+          and posts without spelunking through a private repo like digital archaeologists.
+        </p>
       </div>
 
       <div class="social-grid">
-        <a class="social-link" href="#"><span>GitHub</span><span>↗</span></a>
-        <a class="social-link" href="#"><span>YouTube</span><span>↗</span></a>
-        <a class="social-link" href="#"><span>Docs</span><span>↗</span></a>
-        <a class="social-link" href="#"><span>Logs</span><span>↗</span></a>
+        <a class="social-link"><span>GITHUB</span><span>↗</span></a>
+        <a class="social-link"><span>YOUTUBE</span><span>↗</span></a>
+        <a class="social-link"><span>INSTAGRAM</span><span>↗</span></a>
+        <a class="social-link"><span>TIKTOK</span><span>↗</span></a>
+        <a class="social-link"><span>SUBSTACK</span><span>↗</span></a>
+        <a class="social-link"><span>FACEBOOK</span><span>↗</span></a>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <span>© <span id="year"></span> Aurora OS</span>
-      <span>Command layer active</span>
+      <span>© <span id="year"></span> Aurora Command / Terence Lewis</span>
+      <span>Static multi-page architecture. Neon included. Chaos mildly supervised.</span>
     </div>
+
   </div>
 </footer>
 
