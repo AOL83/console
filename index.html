@@ -16,84 +16,97 @@
   --text:#edf7ff;
 }
 
-/* ===== BASE ===== */
 body{
   margin:0;
-  font-family:Inter,system-ui;
+  font-family:system-ui;
   color:var(--text);
   background:
-    radial-gradient(circle at 20% 10%, rgba(88,246,255,.2), transparent 40rem),
-    radial-gradient(circle at 80% 0%, rgba(255,79,216,.2), transparent 40rem),
+    radial-gradient(circle at 20% 20%, rgba(88,246,255,.15), transparent),
+    radial-gradient(circle at 80% 10%, rgba(255,79,216,.15), transparent),
     linear-gradient(135deg,#03040d,#08111f,#050612);
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header{
-  position:sticky;
-  top:0;
   display:flex;
   justify-content:space-between;
-  padding:1rem 1.5rem;
-  backdrop-filter:blur(20px);
-  background:rgba(5,10,25,.7);
+  padding:1rem;
   border-bottom:1px solid var(--line);
+  backdrop-filter:blur(10px);
 }
 
 .nav a{
   margin-right:1rem;
-  padding:.5rem .9rem;
-  border-radius:999px;
+  color:#aaa;
   cursor:pointer;
-  transition:.2s;
 }
+.nav a:hover{ color:var(--cyan); }
 
-.nav a:hover{
-  border:1px solid var(--cyan);
-  background:rgba(88,246,255,.1);
-  box-shadow:0 0 20px rgba(88,246,255,.2);
-}
-
-/* ===== HERO ===== */
+/* HERO */
 .hero{
-  max-width:1100px;
+  padding:3rem 1rem;
+  max-width:1000px;
   margin:auto;
-  padding:4rem 1.5rem;
 }
 
 h1{
-  font-size:clamp(3rem,8vw,6rem);
-  margin:0;
+  font-size:3rem;
   background:linear-gradient(90deg,#fff,var(--cyan),var(--pink),var(--amber));
   -webkit-background-clip:text;
   color:transparent;
 }
 
-/* ===== GRID ===== */
+/* GRID */
 .grid{
-  max-width:1100px;
-  margin:auto;
   display:grid;
   gap:1rem;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   padding:1rem;
 }
 
 .card{
-  padding:1.2rem;
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,.08);
+  padding:1rem;
+  border:1px solid var(--line);
   background:var(--panel);
+  border-radius:14px;
+  transition:.2s;
   cursor:pointer;
-  transition:.25s;
 }
-
 .card:hover{
-  transform:translateY(-6px);
+  transform:translateY(-4px);
   border-color:var(--cyan);
-  box-shadow:0 0 30px rgba(88,246,255,.2);
 }
 
-/* ===== TRUE FOOTER ===== */
+/* CONSOLE */
+.console{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  max-height:260px;
+  background:#000;
+  border-top:1px solid var(--cyan);
+  display:flex;
+  flex-direction:column;
+  z-index:999;
+}
+
+.log{
+  flex:1;
+  overflow-y:auto;
+  font-family:monospace;
+  padding:.5rem;
+}
+
+#cmd{
+  border:none;
+  border-top:1px solid var(--cyan);
+  background:#000;
+  color:var(--cyan);
+  padding:.5rem;
+}
+
+/* ===== FOOTER (TRUE TRANSPLANT) ===== */
 .footer{
   position:relative;
   margin-top:4rem;
@@ -149,9 +162,10 @@ h1{
   margin-top:1rem;
   color:#b7c7a6;
   max-width:520px;
+  line-height:1.6;
 }
 
-/* SOCIAL GRID */
+/* SOCIAL */
 .social-grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -173,6 +187,7 @@ h1{
 
   color:#eaff9c;
   font-weight:900;
+  letter-spacing:.05em;
 
   box-shadow:
     0 12px 0 rgba(0,50,20,.7),
@@ -207,9 +222,12 @@ h1{
 
 .social-link:hover{
   transform:translateY(-6px) scale(1.03);
+  box-shadow:
+    0 6px 0 rgba(0,50,20,.9),
+    0 30px 60px rgba(0,0,0,.7),
+    0 0 40px rgba(120,255,120,.3);
 }
 
-/* BOTTOM BAR */
 .footer-bottom{
   display:flex;
   justify-content:space-between;
@@ -219,38 +237,12 @@ h1{
   color:#9cae90;
   font-size:.85rem;
 }
-
-/* ===== CONSOLE ===== */
-.console{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  max-height:300px;
-  display:flex;
-  flex-direction:column;
-  background:#000;
-  border-top:1px solid var(--cyan);
-}
-
-.log{
-  flex:1;
-  overflow-y:auto;
-  font-family:monospace;
-  padding:.5rem;
-}
-
-input{
-  border:none;
-  border-top:1px solid var(--cyan);
-  background:#000;
-  color:var(--cyan);
-  padding:.5rem;
-}
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
 <div class="header">
   <div>⚡ Aurora Command</div>
   <div class="nav">
@@ -261,11 +253,13 @@ input{
   </div>
 </div>
 
+<!-- HERO -->
 <div class="hero">
-  <h1>Aurora OS</h1>
-  <p>Command-driven interface with unified visual system.</p>
+  <h1>Aurora Unified System</h1>
+  <p>UI + Brain merged into one operational layer.</p>
 </div>
 
+<!-- GRID -->
 <div class="grid">
   <div class="card" onclick="Aurora.run('page dev')">Dev Environment</div>
   <div class="card" onclick="Aurora.run('page unreal')">VM System</div>
@@ -273,6 +267,13 @@ input{
   <div class="card" onclick="Aurora.run('run cart game')">Run Game</div>
 </div>
 
+<!-- CONSOLE (FIXED POSITION, CORRECT DOM PLACEMENT) -->
+<div class="console">
+  <div id="log" class="log"></div>
+  <input id="cmd" placeholder="Type command..." />
+</div>
+
+<!-- FOOTER (LAST ELEMENT) -->
 <footer class="footer">
   <div class="footer-inner">
 
@@ -303,13 +304,8 @@ input{
   </div>
 </footer>
 
-<div class="console">
-  <div id="log" class="log"></div>
-  <input id="cmd" placeholder="Type command..." />
-</div>
-
 <script>
-const logEl=document.getElementById("log");
+const logEl = document.getElementById("log");
 
 function log(msg){
   const d=document.createElement("div");
@@ -322,20 +318,21 @@ const Aurora={
   state:{page:"home",cart:null},
   commands:{
     help(){return "help, page, load cart, run cart";},
-    page(arg){this.state.page=arg;log("Switched to "+arg);return "OK";},
+    page(arg){this.state.page=arg;log("Switched to "+arg);},
     "load cart"(arg){this.state.cart=arg;return "Loaded "+arg;},
     "run cart"(){
-      if(!this.state.cart)return "No cart";
+      if(!this.state.cart) return "No cart";
       log("Running "+this.state.cart);
-      return "Executed";
     }
   },
   run(input){
     const p=input.split(" ");
     const cmd=p.slice(0,2).join(" ");
     const arg=p.slice(2).join(" ");
-    if(this.commands[cmd])return log(this.commands[cmd].call(this,arg));
-    if(this.commands[p[0]])return log(this.commands[p[0]].call(this,arg));
+
+    if(this.commands[cmd]) return log(this.commands[cmd].call(this,arg));
+    if(this.commands[p[0]]) return log(this.commands[p[0]].call(this,arg));
+
     log("Unknown command");
   }
 };
@@ -349,8 +346,7 @@ document.getElementById("cmd").addEventListener("keypress",e=>{
   }
 });
 
-/* YEAR */
-document.getElementById("year").textContent = new Date().getFullYear();
+document.getElementById("year").textContent=new Date().getFullYear();
 
 log("Aurora OS Ready");
 </script>
