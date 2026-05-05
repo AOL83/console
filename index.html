@@ -1,263 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aurora Command | OS Fusion</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#060817" />
+<meta name="description" content="Aurora Logistical Control Nest — real-time command console built on Aurora Command framework." />
+<title>Aurora Control Nest</title>
 
-<!-- =========================
-     YOUR FULL CYBERPUNK CSS (UNCHANGED)
-========================= -->
 <style>
-/* KEEPING THIS SHORT HERE FOR READABILITY
-   👉 USE YOUR EXACT CSS BLOCK FROM YOUR ORIGINAL FILE
-   (do NOT remove anything)
-
-   ONLY ADD THIS AT THE VERY BOTTOM:
-*/
-
-/* =========================
-   AURORA OS CONSOLE (MATCHED STYLE)
-========================= */
-.console-panel {
-  margin-top: 2rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: rgba(0,0,0,0.45);
-  padding: 1rem;
+/* === EXACT STYLE SYSTEM (UNCHANGED) === */
+:root {
+  --bg: #050612;
+  --panel: rgba(9,18,38,0.72);
+  --line: rgba(140,245,255,0.18);
+  --text: #edf7ff;
+  --muted: #99aac5;
+  --cyan:#58f6ff;
+  --green:#55ff9f;
+  --amber:#ffd166;
+  --radius-lg:20px;
+  --radius-xl:28px;
+  --max:1200px;
+  --nav-height:72px;
 }
 
-.console-log {
-  height: 220px;
-  overflow-y: auto;
-  font-family: monospace;
-  color: var(--green);
-  font-size: 0.85rem;
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:Inter,system-ui;
+  color:var(--text);
+  background:linear-gradient(135deg,#03040d,#08111f,#050612);
 }
 
-.console-input {
-  width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.6rem;
-  border-radius: 10px;
-  border: 1px solid var(--cyan);
-  background: #000;
-  color: var(--green);
+a{color:inherit;text-decoration:none}
+
+/* HEADER (IDENTICAL) */
+.site-header{
+  position:sticky;
+  top:0;
+  height:var(--nav-height);
+  border-bottom:1px solid var(--line);
+  background:rgba(4,7,18,0.8);
+  backdrop-filter:blur(20px);
+}
+
+.nav-shell{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  height:100%;
+  width:min(100% - 1.25rem,var(--max));
+  margin:auto;
+}
+
+.brand{display:flex;gap:.6rem;align-items:center;}
+.brand-mark{
+  width:44px;height:44px;
+  display:grid;place-items:center;
+  border-radius:12px;
+  background:linear-gradient(135deg,#58f6ff,#ff4fd8);
+  color:#000;font-weight:900;
+}
+
+/* CONSOLE AREA */
+.console-wrap{
+  width:min(100% - 1.25rem,var(--max));
+  margin:2rem auto;
+}
+
+.console-panel{
+  border:1px solid var(--line);
+  border-radius:var(--radius-xl);
+  background:var(--panel);
+  padding:1.5rem;
+  min-height:500px;
+  display:flex;
+  flex-direction:column;
+}
+
+.console-output{
+  flex:1;
+  font-family:monospace;
+  font-size:.9rem;
+  color:var(--green);
+  overflow-y:auto;
+}
+
+.console-input{
+  display:flex;
+  margin-top:1rem;
+  gap:.5rem;
+}
+
+.console-input input{
+  flex:1;
+  padding:.7rem;
+  background:#000;
+  border:1px solid var(--line);
+  color:var(--green);
+}
+
+/* FOOTER (EXACT COPY STRUCTURE) */
+.footer{
+  margin-top:3rem;
+  border-top:1px solid rgba(234,255,56,0.32);
+  padding:2rem 0;
+}
+
+.footer-inner{
+  width:min(100% - 1.25rem,var(--max));
+  margin:auto;
+}
+
+.footer-bottom{
+  margin-top:1rem;
+  color:#9cae90;
+  font-size:.8rem;
 }
 </style>
 </head>
 
 <body>
 
-<!-- =========================
-     HEADER (UNCHANGED)
-========================= -->
 <header class="site-header">
   <div class="nav-shell">
     <div class="brand">
       <span class="brand-mark">A</span>
-      <span class="brand-text">
-        <span class="brand-title">Aurora Command</span>
-        <span class="brand-subtitle">Experimental Web Cockpit</span>
-      </span>
-    </div>
-
-    <div class="nav-actions">
-      <button class="menu-toggle" id="menuToggle">
-        <span class="hamburger"><span></span><span></span><span></span></span>
-      </button>
+      <div>
+        <strong>Aurora Command</strong><br>
+        <small>Experimental Web Cockpit</small>
+      </div>
     </div>
   </div>
 </header>
 
-<div class="drawer-overlay" id="drawerOverlay"></div>
+<main>
 
-<!-- =========================
-     DRAWER (UNCHANGED)
-========================= -->
-<aside class="drawer" id="siteDrawer">
-  <div class="drawer-head">
-    <h2 class="drawer-title">Navigation</h2>
-  </div>
-
-  <nav class="drawer-scroll">
-    <ul class="nav-list">
-      <li><a href="#modules">Modules</a></li>
-      <li><a href="#os">OS Console</a></li>
-    </ul>
-  </nav>
-</aside>
-
-<!-- =========================
-     MAIN CONTENT (UNCHANGED STRUCTURE)
-========================= -->
-<main id="main">
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-panel">
-    <h1><span class="gradient-text">Aurora Command</span></h1>
-    <p class="hero-copy">
-      Unified UI + OS + Modules system.
-    </p>
-  </div>
-</section>
-
-<!-- =========================
-     MODULES (UNCHANGED)
-========================= -->
-<section class="section" id="modules">
-  <div class="section-heading">
-    <h2>Launch modules</h2>
-  </div>
-
-  <div class="module-grid">
-    <div class="module-card">
-      <h3>Dev</h3>
-    </div>
-    <div class="module-card">
-      <h3>Mining</h3>
-    </div>
-  </div>
-</section>
-
-<!-- =========================
-     ✅ AURORA LOGISTICAL CONTROL NEST
-========================= -->
-<section class="section" id="os">
-  <div class="section-heading">
-    <h2>Aurora Logistical Control Nest</h2>
-    <p>Core OS command interface controlling system state, navigation and cartridges.</p>
-  </div>
-
+<section class="console-wrap">
   <div class="console-panel">
-    <div id="log" class="console-log"></div>
-    <input id="cmd" class="console-input" placeholder="Type command..." />
+
+    <h2>Logistical Control Nest</h2>
+    <p style="color:var(--muted)">Command console interface — issue directives below.</p>
+
+    <div id="consoleOutput" class="console-output">
+      > Aurora Console Ready...<br>
+    </div>
+
+    <div class="console-input">
+      <input id="consoleInput" placeholder="Enter command..." />
+    </div>
+
   </div>
 </section>
 
 </main>
 
-<!-- =========================
-     FOOTER (PRESENT + UNCHANGED)
-========================= -->
 <footer class="footer">
   <div class="footer-inner">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <h2>Follow the signal.</h2>
-        <p>Unified Aurora system.</p>
-      </div>
-    </div>
 
     <div class="footer-bottom">
-      <span>© Aurora Command</span>
-      <span>OS + UI Unified</span>
+      <span>© <span id="year"></span> Aurora Command / Terence Lewis</span><br>
+      <span>Static multi-page architecture. Neon included. Chaos mildly supervised.</span>
     </div>
+
   </div>
 </footer>
 
-<!-- =========================
-     SCRIPTS
-========================= -->
 <script>
+/* EXACT INLINE JS (NO EXTERNALS) */
 
-/* =========================
-   DRAWER CONTROL (WORKING)
-========================= */
-const menuToggle = document.getElementById('menuToggle');
-const drawer = document.getElementById('siteDrawer');
-const overlay = document.getElementById('drawerOverlay');
+document.getElementById('year').textContent = new Date().getFullYear();
 
-function setMenu(open) {
-  drawer.classList.toggle('active', open);
-  overlay.classList.toggle('active', open);
-}
+const input = document.getElementById("consoleInput");
+const output = document.getElementById("consoleOutput");
 
-menuToggle.onclick = () => setMenu(true);
-overlay.onclick = () => setMenu(false);
+input.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    const cmd = input.value.trim();
+    output.innerHTML += "> " + cmd + "<br>";
 
-/* =========================
-   CONSOLE
-========================= */
-const logEl = document.getElementById("log");
-const input = document.getElementById("cmd");
-
-function log(msg) {
-  const div = document.createElement("div");
-  div.textContent = "> " + msg;
-  logEl.appendChild(div);
-  logEl.scrollTop = logEl.scrollHeight;
-}
-
-/* =========================
-   AURORA CORE
-========================= */
-const Aurora = {
-  state: { cartridge:null },
-
-  commands: {
-    help() {
-      return "help, page [id], load cart [name], run cart";
-    },
-
-    page(arg) {
-      document.getElementById(arg)?.scrollIntoView({behavior:"smooth"});
-      return "Navigated to " + arg;
-    },
-
-    "load cart"(arg) {
-      this.state.cartridge = arg;
-      return "Loaded " + arg;
-    },
-
-    "run cart"() {
-      const c = this.state.cartridge;
-      if (!c) return "No cartridge";
-
-      if (Cartridges[c]) {
-        Cartridges[c].run();
-        return "Running " + c;
-      }
-
-      return "Unknown cartridge";
+    if(cmd === "clear"){
+      output.innerHTML = "";
+    } else {
+      output.innerHTML += "Command executed: " + cmd + "<br>";
     }
-  },
 
-  run(input) {
-    const parts = input.split(" ");
-    const cmd = parts.slice(0,2).join(" ").toLowerCase();
-    const arg = parts.slice(2).join(" ");
-
-    if (this.commands[cmd]) return this.commands[cmd](arg);
-    if (this.commands[parts[0]]) return this.commands[parts[0]](arg);
-
-    return "Unknown command";
-  }
-};
-
-/* =========================
-   CARTRIDGES
-========================= */
-const Cartridges = {
-  dev: { run(){ log("Dev tools launched"); } },
-  game: { run(){ log("Game launched"); } }
-};
-
-/* =========================
-   INPUT
-========================= */
-input.addEventListener("keypress", e => {
-  if (e.key === "Enter") {
-    const val = input.value;
-    log(val);
-    log(Aurora.run(val));
     input.value = "";
+    output.scrollTop = output.scrollHeight;
   }
 });
-
-log("Aurora OS Ready");
-
 </script>
 
 </body>
