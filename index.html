@@ -8,7 +8,7 @@
 <style>
 :root{
   --bg:#050612;
-  --panel:rgba(9,18,38,.7);
+  --panel:rgba(9,18,38,.75);
   --line:rgba(140,245,255,.18);
   --cyan:#58f6ff;
   --pink:#ff4fd8;
@@ -16,36 +16,62 @@
   --text:#edf7ff;
 }
 
+/* BASE */
 body{
   margin:0;
   font-family:system-ui;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(88,246,255,.15), transparent),
-    radial-gradient(circle at 80% 10%, rgba(255,79,216,.15), transparent),
-    var(--bg);
   color:var(--text);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(88,246,255,.2), transparent),
+    radial-gradient(circle at 80% 10%, rgba(255,79,216,.2), transparent),
+    var(--bg);
 }
 
 /* HEADER */
 .header{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   padding:1rem;
   border-bottom:1px solid var(--line);
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(10px);
 }
 
-.nav a{
-  margin-right:1rem;
+.brand{font-weight:900;}
+
+.menu-btn{
   cursor:pointer;
-  color:#aaa;
+  padding:.5rem 1rem;
+  border:1px solid var(--line);
 }
-.nav a:hover{ color:var(--cyan); }
+
+/* DRAWER */
+.drawer{
+  position:fixed;
+  top:0;
+  right:-320px;
+  width:320px;
+  height:100%;
+  background:#020617;
+  border-left:1px solid var(--line);
+  transition:.3s;
+  padding:1rem;
+  overflow:auto;
+}
+.drawer.open{ right:0; }
+
+.drawer a{
+  display:block;
+  padding:.6rem;
+  border-bottom:1px solid #111;
+  cursor:pointer;
+}
+.drawer a:hover{ color:var(--cyan); }
 
 /* HERO */
 .hero{
-  padding:3rem 1rem;
-  max-width:1000px;
-  margin:auto;
+  padding:2rem;
 }
 
 h1{
@@ -59,7 +85,7 @@ h1{
 .grid{
   display:grid;
   gap:1rem;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   padding:1rem;
 }
 
@@ -76,7 +102,7 @@ h1{
   position:fixed;
   bottom:0;
   width:100%;
-  max-height:260px;
+  height:220px;
   background:#000;
   border-top:1px solid var(--cyan);
   display:flex;
@@ -102,28 +128,36 @@ input{
 
 <body>
 
+<!-- HEADER -->
 <div class="header">
-  <div>⚡ Aurora Command</div>
-  <div class="nav">
-    <a onclick="Aurora.run('page home')">Home</a>
-    <a onclick="Aurora.run('page dev')">Dev</a>
-    <a onclick="Aurora.run('page unreal')">VM</a>
-    <a onclick="Aurora.run('help')">Help</a>
-  </div>
+  <div class="brand">⚡ Aurora Command</div>
+  <div class="menu-btn" onclick="toggleDrawer()">☰ Menu</div>
 </div>
 
+<!-- DRAWER -->
+<div id="drawer" class="drawer">
+  <a onclick="Aurora.run('page home')">Home</a>
+  <a onclick="Aurora.run('page dev')">Dev Tools</a>
+  <a onclick="Aurora.run('page unreal')">VM</a>
+  <a onclick="Aurora.run('load cart game')">Load Game</a>
+  <a onclick="Aurora.run('run cart')">Run Game</a>
+</div>
+
+<!-- HERO -->
 <div class="hero">
-  <h1>Aurora Unified OS</h1>
-  <p>Command brain + cyber UI fully integrated.</p>
+  <h1>Aurora Unified System</h1>
+  <p>Cyberpunk UI + Command Brain</p>
 </div>
 
+<!-- GRID -->
 <div class="grid">
   <div class="card" onclick="Aurora.run('page dev')">Open Dev</div>
   <div class="card" onclick="Aurora.run('page unreal')">Open VM</div>
-  <div class="card" onclick="Aurora.run('load cart game')">Load Game</div>
-  <div class="card" onclick="Aurora.run('run cart')">Run Game</div>
+  <div class="card" onclick="Aurora.run('load cart game')">Load Cartridge</div>
+  <div class="card" onclick="Aurora.run('run cart')">Run Cartridge</div>
 </div>
 
+<!-- CONSOLE -->
 <div class="console">
   <div id="log" class="log"></div>
   <input id="cmd" placeholder="Type command..." />
@@ -137,6 +171,10 @@ function log(msg){
   d.textContent="> "+msg;
   logEl.appendChild(d);
   logEl.scrollTop=logEl.scrollHeight;
+}
+
+function toggleDrawer(){
+  document.getElementById("drawer").classList.toggle("open");
 }
 
 /* CORE */
@@ -167,9 +205,13 @@ const Aurora={
     const cmd=p.slice(0,2).join(" ");
     const arg=p.slice(2).join(" ");
 
-    if(this.commands[cmd]) log(this.commands[cmd].call(this,arg));
-    else if(this.commands[p[0]]) log(this.commands[p[0]].call(this,arg));
-    else log("Unknown command");
+    let result;
+
+    if(this.commands[cmd]) result=this.commands[cmd].call(this,arg);
+    else if(this.commands[p[0]]) result=this.commands[p[0]].call(this,arg);
+    else result="Unknown command";
+
+    log(result);
   }
 };
 
