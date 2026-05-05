@@ -13,7 +13,6 @@ body {
   color:#e2e8f0;
 }
 
-/* NAV */
 .navbar {
   display:flex;
   justify-content:space-between;
@@ -29,11 +28,9 @@ body {
 }
 .nav-links a:hover { color:#D4AF37; }
 
-/* PAGES */
 .page { display:none; padding:1rem; }
 .active { display:block; }
 
-/* CONSOLE */
 .console {
   background:#000;
   border:1px solid #4ade80;
@@ -42,6 +39,7 @@ body {
   overflow-y:auto;
   font-family:monospace;
 }
+
 input {
   width:100%;
   padding:0.5rem;
@@ -55,22 +53,20 @@ input {
 
 <body>
 
-<!-- NAV -->
 <div class="navbar">
   <div>⚡ Aurora OS</div>
   <div class="nav-links">
-    <a onclick="switchPage('home')">Home</a>
-    <a onclick="switchPage('console')">Console</a>
-    <a onclick="switchPage('dev')">Dev Tools</a>
-    <a onclick="switchPage('unreal')">Unreal</a>
-    <a onclick="switchPage('cartridge')">Cartridge</a>
+    <a onclick="Aurora.run('page home')">Home</a>
+    <a onclick="Aurora.run('page console')">Console</a>
+    <a onclick="Aurora.run('system dev open')">Dev Tools</a>
+    <a onclick="Aurora.run('system unreal open')">Unreal</a>
+    <a onclick="Aurora.run('page cartridge')">Cartridge</a>
   </div>
 </div>
 
-<!-- PAGES -->
 <div id="home" class="page active">
   <h2>Welcome to Aurora</h2>
-  <p>Modular OS shell running in browser</p>
+  <p>Unified Core-Controlled OS</p>
 </div>
 
 <div id="console" class="page">
@@ -93,12 +89,13 @@ input {
 
 <div id="cartridge" class="page">
   <h2>Cartridge System</h2>
-  <p>Load + run modules</p>
+  <p>Load and run modules via core</p>
 </div>
 
 <script>
+
 /* =========================
-   PAGE SWITCHING
+   UI CONTROL
 ========================= */
 function switchPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -118,77 +115,137 @@ function log(msg) {
 }
 
 /* =========================
-   AURORA CORE (BRAIN)
+   AURORA CORE (ORCHESTRATOR)
 ========================= */
 const Aurora = {
+
   state: {
-    page: "home",
+    systems: {},
     cartridge: null
   },
 
-  commands: {
-    help() {
-      return "Commands: help, page, unreal, load cart, run cart";
-    },
-
-    page(arg) {
-      if (!arg) return "Missing page";
-      switchPage(arg);
-      return "Switched to " + arg;
-    },
-
-    unreal() {
-      switchPage("unreal");
-      return "Unreal environment opened";
-    },
-
-    "load cart"(arg) {
-      Aurora.state.cartridge = arg;
-      return "Loaded: " + arg;
-    },
-
-    "run cart"() {
-      const c = Aurora.state.cartridge;
-      if (!c) return "No cartridge";
-
-      if (Cartridges[c]) {
-        Cartridges[c].run();
-        return "Running " + c;
-      }
-
-      return "Unknown cartridge";
-    }
+  /* SYSTEM REGISTRATION */
+  register(name, system) {
+    this.state.systems[name] = system;
   },
 
+  /* COMMAND ENGINE */
   run(input) {
-    const parts = input.split(" ");
-    const cmd = parts.slice(0,2).join(" ").toLowerCase();
-    const arg = parts.slice(2).join(" ");
+    const parts = input.trim().split(" ");
+    const [type, name, action, ...rest] = parts;
+    const arg = rest.join(" ");
 
-    if (this.commands[cmd]) return this.commands[cmd](arg);
-    if (this.commands[parts[0]]) return this.commands[parts[0]](arg);
+    if (type === "page") {
+      switchPage(name);
+      return this.output("Page → " + name);
+    }
 
-    return "Unknown command";
+    if (type === "system") {
+      const sys = this.state.systems[name];
+      if (!sys) return this.output("System not found");
+
+      if (!sys[action]) return this.output("Invalid action");
+
+      const result = sys[action](arg);
+      return this.output(result || "OK");
+    }
+
+    if (type === "cart") {
+      if (name === "load") {
+        this.state.cartridge = action;
+        return this.output("Loaded cart: " + action);
+      }
+
+      if (name === "run") {
+        const c = this.state.cartridge;
+        if (!c) return this.output("No cart loaded");
+
+        const cart = Cartridges[c];
+        if (!cart) return this.output("Cart not found");
+
+        cart.run();
+        return this.output("Running cart: " + c);
+      }
+    }
+
+    if (type === "help") {
+      return this.output(
+        "Commands:\n" +
+        "page [name]\n" +
+        "system [name] [action]\n" +
+        "cart load [name]\n" +
+        "cart run"
+      );
+    }
+
+    return this.output("Unknown command");
+  },
+
+  output(msg) {
+    log(msg);
+    return msg;
   }
 };
+
+/* =========================
+   SYSTEM DEFINITIONS
+========================= */
+
+/* DEV SYSTEM */
+Aurora.register("dev", {
+  open() {
+    switchPage("dev");
+    return "Dev environment opened";
+  }
+});
+
+/* UNREAL SYSTEM */
+Aurora.register("unreal", {
+  open() {
+    switchPage("unreal");
+    return "VM launched";
+  }
+});
+
+/* MINING SYSTEM (example future expansion) */
+Aurora.register("mining", {
+  start() {
+    return "Mining started";
+  },
+  stop() {
+    return "Mining stopped";
+  }
+});
+
+/* FLIPPER SYSTEM (example) */
+Aurora.register("flipper", {
+  connect() {
+    return "Flipper connected";
+  },
+  arm() {
+    return "Flipper armed";
+  }
+});
 
 /* =========================
    CARTRIDGES
 ========================= */
 const Cartridges = {
+
   game: {
     run() {
-      switchPage("unreal");
-      log("Game cartridge launched");
+      Aurora.run("system unreal open");
+      log("Game cartridge executed");
     }
   },
 
   dev: {
     run() {
-      switchPage("dev");
-      log("Dev environment launched");
+      Aurora.run("system dev open");
+      log("Dev cartridge executed");
     }
   }
+
 };
 
 /* =========================
@@ -200,8 +257,7 @@ input.addEventListener("keypress", e => {
   if (e.key === "Enter") {
     const val = input.value;
     log(val);
-    const result = Aurora.run(val);
-    log(result);
+    Aurora.run(val);
     input.value = "";
   }
 });
@@ -209,7 +265,8 @@ input.addEventListener("keypress", e => {
 /* =========================
    INIT
 ========================= */
-log("Aurora OS Ready");
+log("Aurora Core Online");
+
 </script>
 
 </body>
