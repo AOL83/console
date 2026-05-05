@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora Core OS</title>
+
+<style>
+body {
+  margin:0;
+  font-family:system-ui;
+  background:#0a0f1c;
+  color:#e2e8f0;
+}
+
+/* NAV */
+.navbar {
+  display:flex;
+  justify-content:space-between;
+  padding:1rem;
+  background:#020617;
+  border-bottom:1px solid #333;
+}
+.nav-links a {
+  margin-right:1rem;
+  color:#94a3b8;
+  text-decoration:none;
+  cursor:pointer;
+}
+.nav-links a:hover { color:#D4AF37; }
+
+/* PAGES */
+.page { display:none; padding:1rem; }
+.active { display:block; }
+
+/* CONSOLE */
+.console {
+  background:#000;
+  border:1px solid #4ade80;
+  padding:1rem;
+  height:200px;
+  overflow-y:auto;
+  font-family:monospace;
+}
+input {
+  width:100%;
+  padding:0.5rem;
+  margin-top:0.5rem;
+  background:#000;
+  color:#4ade80;
+  border:1px solid #4ade80;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<div class="navbar">
+  <div>⚡ Aurora OS</div>
+  <div class="nav-links">
+    <a onclick="switchPage('home')">Home</a>
+    <a onclick="switchPage('console')">Console</a>
+    <a onclick="switchPage('dev')">Dev Tools</a>
+    <a onclick="switchPage('unreal')">Unreal</a>
+    <a onclick="switchPage('cartridge')">Cartridge</a>
+  </div>
+</div>
+
+<!-- PAGES -->
+<div id="home" class="page active">
+  <h2>Welcome to Aurora</h2>
+  <p>Modular OS shell running in browser</p>
+</div>
+
+<div id="console" class="page">
+  <h2>Console</h2>
+  <div id="log" class="console"></div>
+  <input id="cmd" placeholder="Type command..." />
+</div>
+
+<div id="dev" class="page">
+  <h2>Dev Tools</h2>
+  <iframe src="https://stackblitz.com/edit/web-platform?embed=1"
+          style="width:100%;height:400px;border:none;"></iframe>
+</div>
+
+<div id="unreal" class="page">
+  <h2>Unreal / VM</h2>
+  <iframe src="https://copy.sh/v86/?profile=alpine"
+          style="width:100%;height:400px;border:none;"></iframe>
+</div>
+
+<div id="cartridge" class="page">
+  <h2>Cartridge System</h2>
+  <p>Load + run modules</p>
+</div>
+
+<script>
+/* =========================
+   PAGE SWITCHING
+========================= */
+function switchPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* =========================
+   LOG SYSTEM
+========================= */
+const logEl = document.getElementById("log");
+
+function log(msg) {
+  const div = document.createElement("div");
+  div.textContent = "> " + msg;
+  logEl.appendChild(div);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+/* =========================
+   AURORA CORE (BRAIN)
+========================= */
+const Aurora = {
+  state: {
+    page: "home",
+    cartridge: null
+  },
+
+  commands: {
+    help() {
+      return "Commands: help, page, unreal, load cart, run cart";
+    },
+
+    page(arg) {
+      if (!arg) return "Missing page";
+      switchPage(arg);
+      return "Switched to " + arg;
+    },
+
+    unreal() {
+      switchPage("unreal");
+      return "Unreal environment opened";
+    },
+
+    "load cart"(arg) {
+      Aurora.state.cartridge = arg;
+      return "Loaded: " + arg;
+    },
+
+    "run cart"() {
+      const c = Aurora.state.cartridge;
+      if (!c) return "No cartridge";
+
+      if (Cartridges[c]) {
+        Cartridges[c].run();
+        return "Running " + c;
+      }
+
+      return "Unknown cartridge";
+    }
+  },
+
+  run(input) {
+    const parts = input.split(" ");
+    const cmd = parts.slice(0,2).join(" ").toLowerCase();
+    const arg = parts.slice(2).join(" ");
+
+    if (this.commands[cmd]) return this.commands[cmd](arg);
+    if (this.commands[parts[0]]) return this.commands[parts[0]](arg);
+
+    return "Unknown command";
+  }
+};
+
+/* =========================
+   CARTRIDGES
+========================= */
+const Cartridges = {
+  game: {
+    run() {
+      switchPage("unreal");
+      log("Game cartridge launched");
+    }
+  },
+
+  dev: {
+    run() {
+      switchPage("dev");
+      log("Dev environment launched");
+    }
+  }
+};
+
+/* =========================
+   INPUT HANDLER
+========================= */
+const input = document.getElementById("cmd");
+
+input.addEventListener("keypress", e => {
+  if (e.key === "Enter") {
+    const val = input.value;
+    log(val);
+    const result = Aurora.run(val);
+    log(result);
+    input.value = "";
+  }
+});
+
+/* =========================
+   INIT
+========================= */
+log("Aurora OS Ready");
+</script>
+
+</body>
+</html>
