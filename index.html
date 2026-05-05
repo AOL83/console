@@ -6,10 +6,10 @@
 <title>Aurora Command OS</title>
 
 <style>
-:root{
+:root {
   --bg:#050612;
   --panel:rgba(9,18,38,.75);
-  --line:rgba(140,245,255,.18);
+  --line:rgba(88,246,255,.2);
   --cyan:#58f6ff;
   --pink:#ff4fd8;
   --amber:#ffd166;
@@ -22,8 +22,8 @@ body{
   font-family:system-ui;
   color:var(--text);
   background:
-    radial-gradient(circle at 20% 20%, rgba(88,246,255,.2), transparent),
-    radial-gradient(circle at 80% 10%, rgba(255,79,216,.2), transparent),
+    radial-gradient(circle at 20% 20%, rgba(88,246,255,.25), transparent),
+    radial-gradient(circle at 80% 10%, rgba(255,79,216,.25), transparent),
     var(--bg);
 }
 
@@ -31,43 +31,68 @@ body{
 .header{
   display:flex;
   justify-content:space-between;
-  align-items:center;
   padding:1rem;
   border-bottom:1px solid var(--line);
-  background:rgba(0,0,0,.6);
-  backdrop-filter:blur(10px);
+  backdrop-filter:blur(12px);
 }
 
 .brand{font-weight:900;}
 
 .menu-btn{
   cursor:pointer;
-  padding:.5rem 1rem;
   border:1px solid var(--line);
+  padding:.5rem .8rem;
+  border-radius:10px;
 }
 
 /* DRAWER */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+}
+.overlay.active{ display:block; }
+
 .drawer{
   position:fixed;
+  right:0;
   top:0;
-  right:-320px;
   width:320px;
   height:100%;
   background:#020617;
   border-left:1px solid var(--line);
+  transform:translateX(100%);
   transition:.3s;
-  padding:1rem;
-  overflow:auto;
+  display:flex;
+  flex-direction:column;
 }
-.drawer.open{ right:0; }
+.drawer.active{ transform:translateX(0); }
 
-.drawer a{
+.drawer input{
+  margin:.5rem;
+  padding:.5rem;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:#000;
+  color:var(--cyan);
+}
+
+.nav{
+  overflow-y:auto;
+  flex:1;
+}
+
+.nav a{
   display:block;
-  padding:.6rem;
+  padding:.7rem;
   border-bottom:1px solid #111;
   cursor:pointer;
+  border-radius:8px;
 }
-.drawer a:hover{ color:var(--cyan); }
+.nav a:hover{
+  background:rgba(88,246,255,.1);
+}
 
 /* HERO */
 .hero{
@@ -85,24 +110,29 @@ h1{
 .grid{
   display:grid;
   gap:1rem;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   padding:1rem;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
 }
 
 .card{
   padding:1rem;
   border:1px solid var(--line);
   background:var(--panel);
+  border-radius:16px;
   cursor:pointer;
+  transition:.2s;
 }
-.card:hover{ border-color:var(--cyan); }
+.card:hover{
+  transform:translateY(-3px);
+  border-color:var(--cyan);
+}
 
 /* CONSOLE */
 .console{
   position:fixed;
   bottom:0;
   width:100%;
-  height:220px;
+  height:200px;
   background:#000;
   border-top:1px solid var(--cyan);
   display:flex;
@@ -116,7 +146,7 @@ h1{
   padding:.5rem;
 }
 
-input{
+input.cmd{
   background:#000;
   border:none;
   border-top:1px solid var(--cyan);
@@ -128,44 +158,73 @@ input{
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div class="brand">⚡ Aurora Command</div>
-  <div class="menu-btn" onclick="toggleDrawer()">☰ Menu</div>
+  <div class="menu-btn" id="menuBtn">☰</div>
 </div>
 
-<!-- DRAWER -->
-<div id="drawer" class="drawer">
-  <a onclick="Aurora.run('page home')">Home</a>
-  <a onclick="Aurora.run('page dev')">Dev Tools</a>
-  <a onclick="Aurora.run('page unreal')">VM</a>
-  <a onclick="Aurora.run('load cart game')">Load Game</a>
-  <a onclick="Aurora.run('run cart')">Run Game</a>
+<div class="overlay" id="overlay"></div>
+
+<div class="drawer" id="drawer">
+  <input id="search" placeholder="Search..." />
+  <div class="nav" id="nav">
+    <a onclick="runCmd('page home')">Home</a>
+    <a onclick="runCmd('page dev')">Dev</a>
+    <a onclick="runCmd('page unreal')">VM</a>
+    <a onclick="runCmd('load cart game')">Load Game</a>
+    <a onclick="runCmd('run cart')">Run Game</a>
+  </div>
 </div>
 
-<!-- HERO -->
 <div class="hero">
-  <h1>Aurora Unified System</h1>
-  <p>Cyberpunk UI + Command Brain</p>
+  <h1>Aurora OS</h1>
 </div>
 
-<!-- GRID -->
 <div class="grid">
-  <div class="card" onclick="Aurora.run('page dev')">Open Dev</div>
-  <div class="card" onclick="Aurora.run('page unreal')">Open VM</div>
-  <div class="card" onclick="Aurora.run('load cart game')">Load Cartridge</div>
-  <div class="card" onclick="Aurora.run('run cart')">Run Cartridge</div>
+  <div class="card" onclick="runCmd('page dev')">Dev Tools</div>
+  <div class="card" onclick="runCmd('page unreal')">VM</div>
+  <div class="card" onclick="runCmd('load cart game')">Load Cart</div>
+  <div class="card" onclick="runCmd('run cart')">Run Cart</div>
 </div>
 
-<!-- CONSOLE -->
 <div class="console">
   <div id="log" class="log"></div>
-  <input id="cmd" placeholder="Type command..." />
+  <input id="cmd" class="cmd" placeholder="Command..." />
 </div>
 
 <script>
-const logEl=document.getElementById("log");
+const drawer = document.getElementById("drawer");
+const overlay = document.getElementById("overlay");
+const menuBtn = document.getElementById("menuBtn");
 
+/* MENU */
+menuBtn.onclick = () => toggleMenu();
+overlay.onclick = () => closeMenu();
+
+function toggleMenu(){
+  drawer.classList.toggle("active");
+  overlay.classList.toggle("active");
+}
+
+function closeMenu(){
+  drawer.classList.remove("active");
+  overlay.classList.remove("active");
+}
+
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape") closeMenu();
+});
+
+/* SEARCH */
+document.getElementById("search").oninput = e=>{
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll(".nav a").forEach(a=>{
+    a.style.display = a.textContent.toLowerCase().includes(q) ? "block":"none";
+  });
+};
+
+/* LOG */
+const logEl = document.getElementById("log");
 function log(msg){
   const d=document.createElement("div");
   d.textContent="> "+msg;
@@ -173,50 +232,39 @@ function log(msg){
   logEl.scrollTop=logEl.scrollHeight;
 }
 
-function toggleDrawer(){
-  document.getElementById("drawer").classList.toggle("open");
-}
-
 /* CORE */
 const Aurora={
   state:{page:"home",cart:null},
-
-  commands:{
-    help(){ return "help, page [x], load cart [x], run cart"; },
-
-    page(arg){
-      this.state.page=arg;
-      return "Switched to "+arg;
-    },
-
-    "load cart"(arg){
-      this.state.cart=arg;
-      return "Loaded "+arg;
-    },
-
-    "run cart"(){
-      if(!this.state.cart) return "No cart loaded";
-      return "Running "+this.state.cart;
-    }
-  },
-
   run(input){
     const p=input.split(" ");
     const cmd=p.slice(0,2).join(" ");
     const arg=p.slice(2).join(" ");
 
-    let result;
+    let res="Unknown";
 
-    if(this.commands[cmd]) result=this.commands[cmd].call(this,arg);
-    else if(this.commands[p[0]]) result=this.commands[p[0]].call(this,arg);
-    else result="Unknown command";
+    if(cmd==="page"){
+      this.state.page=arg;
+      res="Switched to "+arg;
+    }
+    else if(cmd==="load cart"){
+      this.state.cart=arg;
+      res="Loaded "+arg;
+    }
+    else if(cmd==="run cart"){
+      res=this.state.cart ? "Running "+this.state.cart : "No cart";
+    }
 
-    log(result);
+    log(res);
   }
 };
 
+function runCmd(c){
+  Aurora.run(c);
+  closeMenu();
+}
+
 /* INPUT */
-document.getElementById("cmd").addEventListener("keypress",e=>{
+document.getElementById("cmd").addEventListener("keypress", e=>{
   if(e.key==="Enter"){
     const v=e.target.value;
     log(v);
@@ -225,7 +273,7 @@ document.getElementById("cmd").addEventListener("keypress",e=>{
   }
 });
 
-log("Aurora OS Ready");
+log("Aurora Ready");
 </script>
 
 </body>
